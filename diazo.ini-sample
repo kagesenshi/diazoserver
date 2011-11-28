@@ -1,0 +1,30 @@
+[server:main]
+use = egg:Paste#http
+host = 127.0.0.1
+port = 5000
+
+[composite:main]
+use = egg:Paste#urlmap
+/static = static
+/ = default
+
+[app:static]
+use = egg:Paste#static
+document_root = %(here)s/static
+
+[pipeline:default]
+pipeline = egg:Paste#cgitb
+           egg:Paste#httpexceptions
+           theme.default
+           zope.proxy
+
+
+[filter:theme.default]
+use = egg:diazo#main
+rules = %(here)s/static/rules.xml
+notheme =
+    /emptypage
+
+[app:zope.proxy]
+use = egg:Paste#proxy
+address = http://www.example.com/
